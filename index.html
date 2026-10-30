@@ -37,7 +37,7 @@ ruins:{name:'THE RUINS',bg:'#21182f',floor:'#352744',wall:'#6b587b',npc:{x:160,y
 snowdin:{name:'SNOWDIN',bg:'#101b30',floor:'#263951',wall:'#657f99',npc:{x:160,y:91},exit:{x:282,y:35,w:22,h:36}}
 };
 function hud(){stats.textContent='HEDGE  LV '+player.lv+'  HP '+player.hp+'/'+player.maxHp;gold.textContent=player.g+' G';roomLabel.textContent=rooms[room].name}
-function box(lines,done){mode='dialogue';lines=lines;line=0;dialogueBox.textContent=lines[0];dialogue.classList.add('open');afterDialogue=done||(()=>{});}
+function box(textLines,done){mode='dialogue';lines=textLines;line=0;dialogueBox.textContent=lines[0];dialogue.classList.add('open');afterDialogue=done||(()=>{});}
 let afterDialogue=()=>{};
 function advance(){line++;if(line>=lines.length){dialogue.classList.remove('open');mode='world';const cb=afterDialogue;afterDialogue=()=>{};cb()}else dialogueBox.textContent=lines[line]}
 function notify(s){toast.textContent=s;toast.style.display='block';setTimeout(()=>toast.style.display='none',1300)}
