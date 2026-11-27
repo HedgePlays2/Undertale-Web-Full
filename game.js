@@ -68,14 +68,14 @@
     toast=message; toastUntil=performance.now()+1500;
   }
   function saveGame(){
-    const data={roomId,player:{...player,items:[...player.items]}};
-    try{localStorage.setItem(SAVE_KEY,JSON.stringify(data));notice("GAME SAVED.");}
+    const data={roomId,playerName,player:{...player,items:[...player.items]}};
+    try{localStorage.setItem(SAVE_KEY,JSON.stringify(data));hasSave=true;notice("GAME SAVED.");}
     catch(e){notice("SAVE FAILED — STORAGE UNAVAILABLE.");}
   }
   function loadGame(){
     try{
       const data=JSON.parse(localStorage.getItem(SAVE_KEY)||"null");
-      if(data && data.player && world[data.roomId]){
+      if(data && data.player && world[data.roomId]){hasSave=true;playerName=data.playerName||"FRISK";
         roomId=data.roomId; Object.assign(player,data.player);
         player.x=clamp(player.x,28,286);player.y=clamp(player.y,42,205);
       }
@@ -335,6 +335,7 @@
     if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"," "].includes(e.key))e.preventDefault();
     keys.add(k);
     if(e.repeat)return;
+    if(mode==="title"){const n=hasSave?3:2;if(k==="ArrowDown"||k==="s")titleIndex=(titleIndex+1)%n;if(k==="ArrowUp"||k==="w")titleIndex=(titleIndex+n-1)%n;if(k==="z"||k==="Enter")startFromTitle();return;}
     if(mode==="dialog"&&(k==="z"||k==="Enter")){nextDialog();return;}
     if(mode==="battle"){battleInput(k);return;}
     if(mode==="world"&&(k==="z"||k==="Enter"))interact();
