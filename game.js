@@ -13,6 +13,7 @@
   let mode = "title", roomId = "entrance", dialog = null, toast = "", toastUntil = 0;
   let lastTime = 0, battle = null, menuIndex = 0, menuPage = "root";
   let encounterCooldown = 0, stepCount = 0, mossEncounterDone = false;
+  let openingStage = 0;
   let playerName = "CHARA", titleIndex = 0, hasSave = false, nameBuffer = "", nameCursor = 0;
 
   const player = { x: 160, y: 174, hp: 20, maxHp: 20, lv: 1, gold: 0, items: ["Familiar Candy"], facing: "up" };
@@ -259,7 +260,9 @@
     const r=world[roomId];
     const npc=r.npc;
     if(npc&&dist(player,npc)<25){
-      if(npc.name==="MOSS"){
+      if(npc.name==="TORIEL"){
+        say(["* Toriel watches over you with a gentle smile.","* "There are many puzzles in the Ruins."","* "If you need help, do not hesitate to ask.""]);
+      }else if(npc.name==="MOSS"){
         if(!mossEncounterDone){
           say(["* The little moss creature tilts its head.","* A faint glow gathers around it.","* It seems to want to test your courage."],startBattle);
         }else{
@@ -320,8 +323,99 @@
   function beginNewGame(){
     roomId="entrance";player.x=160;player.y=178;player.hp=20;player.gold=0;player.lv=1;
     player.items=["Familiar Candy"];mossEncounterDone=false;
-    mode="dialog";
-    say(["Long ago, two races ruled over Earth: HUMANS and MONSTERS.","One day, war broke out between the two races.","After the humans won, they sealed the monsters underground.","Many years later...","A child climbs Mount Ebott."],()=>{mode="world";hud();});
+    openingStage=0;mode="opening";dialog=null;hud();
+  }
+  function drawHuman(x,y,scale=1){
+    ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);
+    rect(-4,-12,8,7,"#e5b98c");rect(-5,-5,10,10,"#4b6da1");
+    rect(-5,5,4,7,"#29243a");rect(1,5,4,7,"#29243a");
+    rect(-4,-14,8,3,"#59402e");ctx.restore();
+  }
+  function drawFlowey(x,y){
+    ctx.save();ctx.translate(x,y);
+    for(let i=0;i<6;i++){ctx.save();ctx.rotate(i*Math.PI/3);rect(-3,-21,6,12,"#f4df4d");ctx.restore();}
+    ctx.fillStyle="#f5e85a";ctx.beginPath();ctx.arc(0,0,12,0,Math.PI*2);ctx.fill();
+    rect(-7,-3,4,3,"#171717");rect(4,-3,4,3,"#171717");rect(-5,5,10,2,"#171717");
+    rect(-2,12,4,13,"#39833d");rect(-12,23,24,3,"#39833d");ctx.restore();
+  }
+  function drawToriel(x,y){
+    ctx.save();ctx.translate(x,y);
+    rect(-10,-20,20,23,"#eee5d5");rect(-8,-29,16,12,"#eee5d5");
+    rect(-8,-31,4,7,"#eee5d5");rect(4,-31,4,7,"#eee5d5");
+    rect(-5,-25,3,3,"#4a3029");rect(3,-25,3,3,"#4a3029");
+    rect(-7,-14,14,2,"#8c2635");rect(-5,3,4,8,"#eee5d5");rect(1,3,4,8,"#eee5d5");
+    ctx.restore();
+  }
+  function openingText(lines){
+    rect(12,157,296,72,"#fff");rect(16,161,288,64,"#000");
+    lines.forEach((line,i)=>text(line,27,181+i*15,9,"#fff"));
+    text("Z / ENTER  ▼",291,216,7,"#aaa","right");
+  }
+  function drawOpening(){
+    rect(0,0,W,H,"#000");
+    if(openingStage===0){
+      text("LONG AGO, TWO RACES RULED OVER EARTH:",160,72,9,"#fff","center");
+      text("HUMANS AND MONSTERS.",160,92,11,"#fff","center");
+      text("One day, war broke out between them.",160,126,8,"#aaa","center");
+      text("The humans were victorious.",160,140,8,"#aaa","center");
+    }else if(openingStage===1){
+      text("THE HUMANS SEALED THE MONSTERS",160,65,9,"#fff","center");
+      text("UNDERGROUND WITH A MAGIC BARRIER.",160,81,9,"#fff","center");
+      rect(55,112,210,2,"#766b88");rect(64,116,192,50,"#33283f");
+      text("MOUNT EBBOTT",160,192,9,"#aaa","center");
+    }else if(openingStage===2){
+      rect(0,0,W,H,"#090910");
+      text("201X",160,30,9,"#aaa","center");
+      rect(0,175,320,65,"#17131b");
+      for(let i=0;i<9;i++){rect(20+i*34,155-(i%3)*12,24,30+(i%3)*12,"#302a39");}
+      drawHuman(160,142,1.5);
+      text("A child climbed the mountain.",160,216,9,"#fff","center");
+    }else if(openingStage===3){
+      rect(0,0,W,H,"#11101b");
+      rect(48,20,224,200,"#30283b");
+      rect(56,28,208,184,"#4b3b51");
+      rect(95,80,130,112,"#c5a65c");
+      for(let i=0;i<34;i++){const x=105+(i*37%110),y=90+(i*23%90);rect(x,y,2,5,"#f2e4a0");}
+      drawHuman(160,150,1.4);
+      openingText(["* You fall a long way down.","* Soft flowers break your fall."]);
+    }else if(openingStage===4){
+      rect(0,0,W,H,"#171323");
+      rect(0,178,320,62,"#382d47");
+      for(let i=0;i<30;i++)rect((i*47)%320,180+(i*13)%55,2,2,"#796b84");
+      drawHuman(160,164,1.3);drawFlowey(160,111);
+      openingText(["* A flower approaches you.","* "Howdy! I'm FLOWEY.""]);
+    }else if(openingStage===5){
+      rect(0,0,W,H,"#171323");rect(0,178,320,62,"#382d47");
+      drawHuman(160,164,1.3);drawFlowey(160,111);
+      text("FLOWEY",160,30,10,"#fff","center");
+      openingText(["* "Your SOUL is the very source","* of your being!""]);
+    }else if(openingStage===6){
+      rect(0,0,W,H,"#171323");rect(0,178,320,62,"#382d47");
+      drawHuman(160,164,1.3);drawFlowey(160,111);
+      for(let i=0;i<8;i++){const a=i*Math.PI/4;pixelHeart(160+Math.cos(a)*35-3,111+Math.sin(a)*25-3,1,"#fff");}
+      openingText(["* Flowey surrounds you with","* strange, smiling pellets..."]);
+    }else if(openingStage===7){
+      rect(0,0,W,H,"#171323");rect(0,178,320,62,"#382d47");
+      drawHuman(160,164,1.3);drawFlowey(160,111);drawToriel(92,150);
+      rect(110,70,100,3,"#fff");rect(110,73,100,2,"#bdb5d1");
+      openingText(["* A stranger drives the flower away.","* "Come along, my child.""]);
+    }else{
+      rect(0,0,W,H,"#20182b");
+      rect(24,25,272,190,"#4b3b51");
+      rect(32,33,256,174,"#30283b");
+      text("THE RUINS",160,58,13,"#fff","center");
+      drawHuman(160,157,1.3);drawToriel(210,151);
+      openingText(["* You follow Toriel into the Ruins.","* She offers to guide you."]);
+    }
+  }
+  function advanceOpening(){
+    openingStage++;
+    if(openingStage>8){
+      mode="world";roomId="entrance";player.x=160;player.y=178;
+      world.entrance.npc={x:160,y:110,name:"TORIEL",color:"#eee5d5"};
+      hud();
+      say(["* Toriel: Welcome to the RUINS, my child.","* I will guide you through this place."]);
+    }
   }
   function startFromTitle(){
     const opts=hasSave?["START","CONTINUE","OPTIONS"]:["START","OPTIONS"];
@@ -332,6 +426,7 @@
   function draw(){
     if(mode==="title"){drawTitle();return;}
     if(mode==="name"){drawNameEntry();return;}
+    if(mode==="opening"){drawOpening();return;}
     if(mode==="battle"){drawBattle(Math.min(.05,(performance.now()-lastTime)/1000||0));return;}
     drawWorld();
     if(dialog){
@@ -353,6 +448,7 @@
     keys.add(k);
     if(e.repeat)return;
     if(mode==="title"){const n=hasSave?3:2;if(k==="ArrowDown"||k==="s")titleIndex=(titleIndex+1)%n;if(k==="ArrowUp"||k==="w")titleIndex=(titleIndex+n-1)%n;if(k==="z"||k==="Enter")startFromTitle();return;}
+    if(mode==="opening"){if(k==="z"||k==="Enter")advanceOpening();return;}
     if(mode==="name"){
       if(k==="Escape"||k==="x"){mode="title";return;}
       if(k==="Backspace"){nameBuffer=nameBuffer.slice(0,-1);return;}
