@@ -36,7 +36,7 @@ window.addEventListener("unhandledrejection", function (event) {
   let mode = "title", roomId = "entrance", dialog = null, toast = "", toastUntil = 0;
   let lastTime = 0, battle = null, menuIndex = 0, menuPage = "root";
   let encounterCooldown = 0, stepCount = 0, mossEncounterDone = false;
-  let openingStage = 0;
+  let openingStage = 0, floweyAttack = null;
   let playerName = "CHARA", titleIndex = 0, hasSave = false, nameBuffer = "", nameCursor = 0;
 
   const player = { x: 160, y: 174, hp: 20, maxHp: 20, lv: 1, gold: 0, items: ["Familiar Candy"], facing: "up" };
@@ -314,6 +314,7 @@ window.addEventListener("unhandledrejection", function (event) {
     say(["* The old stones are quiet.","* Nothing happens."]);
   }
   function update(dt){
+    if(mode==="flowey"){updateFloweyAttack(dt);return;}
     if(mode==="world"){
       let dx=0,dy=0;
       if(keys.has("ArrowLeft")||keys.has("a"))dx--;
@@ -477,7 +478,51 @@ window.addEventListener("unhandledrejection", function (event) {
       openingText(["* You follow Toriel into the Ruins.","* She offers to guide you."]);
     }
   }
+  function startFloweyAttack(){
+    mode="flowey";
+    floweyAttack={heart:{x:160,y:164},time:0,bullets:[],spawn:0,hit:false};
+  }
+  function updateFloweyAttack(dt){
+    if(!floweyAttack)return;
+    const a=floweyAttack;
+    let dx=0,dy=0;
+    if(keys.has("ArrowLeft")||keys.has("a"))dx--;
+    if(keys.has("ArrowRight")||keys.has("d"))dx++;
+    if(keys.has("ArrowUp")||keys.has("w"))dy--;
+    if(keys.has("ArrowDown")||keys.has("s"))dy++;
+    const len=Math.hypot(dx,dy)||1;
+    a.heart.x=clamp(a.heart.x+dx/len*95*dt,112,208);
+    a.heart.y=clamp(a.heart.y+dy/len*95*dt,139,190);
+    a.time+=dt;a.spawn-=dt;
+    if(a.spawn<=0&&a.time<2.25){
+      a.spawn=.22;
+      const angle=Math.atan2(a.heart.y-164,a.heart.x-160);
+      for(let n=-1;n<=1;n++){
+        const ang=angle+n*.34;
+        a.bullets.push({x:160+Math.cos(ang)*57,y:164+Math.sin(ang)*43,vx:Math.cos(ang)*82,vy:Math.sin(ang)*82});
+      }
+    }
+    a.bullets=a.bullets.filter(b=>{
+      b.x+=b.vx*dt;b.y+=b.vy*dt;
+      if(Math.hypot(b.x-a.heart.x,b.y-a.heart.y)<7&&!a.hit){a.hit=true;}
+      return b.x>103&&b.x<217&&b.y>128&&b.y<201;
+    });
+    // Flowey's pellets close in, but Toriel intervenes before they can hurt the child.
+    if(a.time>2.8){floweyAttack=null;openingStage=7;mode="opening";}
+  }
+  function drawFloweyAttack(){
+    rect(0,0,W,H,"#171323");
+    rect(0,0,W,112,"#21182c");
+    drawFlowey(160,72);
+    text("FLOWEY",160,16,9,"#fff","center");
+    text('"DIE!"',160,111,10,"#ffdf58","center");
+    rect(103,128,114,76,"#fff");rect(107,132,106,68,"#000");
+    floweyAttack?.bullets.forEach(b=>pixelHeart(Math.round(b.x)-3,Math.round(b.y)-3,1,"#fff"));
+    if(floweyAttack)pixelHeart(Math.round(floweyAttack.heart.x)-3,Math.round(floweyAttack.heart.y)-3,1);
+    text("MOVE: ARROW KEYS",160,221,7,"#aaa","center");
+  }
   function advanceOpening(){
+    if(openingStage===6){startFloweyAttack();return;}
     openingStage++;
     if(openingStage>8){
       mode="world";roomId="entrance";player.x=160;player.y=178;
@@ -496,6 +541,7 @@ window.addEventListener("unhandledrejection", function (event) {
     if(mode==="title"){drawTitle();return;}
     if(mode==="name"){drawNameEntry();return;}
     if(mode==="opening"){drawOpening();return;}
+    if(mode==="flowey"){drawFloweyAttack();return;}
     if(mode==="battle"){drawBattle(Math.min(.05,(performance.now()-lastTime)/1000||0));return;}
     drawWorld();
     if(dialog){
@@ -520,6 +566,7 @@ window.addEventListener("unhandledrejection", function (event) {
     if(e.repeat)return;
     if(mode==="title"){const n=hasSave?3:2;if(k==="ArrowDown"||k==="s")titleIndex=(titleIndex+1)%n;if(k==="ArrowUp"||k==="w")titleIndex=(titleIndex+n-1)%n;if(k==="z"||k==="Enter")startFromTitle();return;}
     if(mode==="opening"){if(k==="z"||k==="Enter")advanceOpening();return;}
+    if(mode==="flowey"){return;}
     if(mode==="name"){
       if(k==="Escape"||k==="x"){mode="title";return;}
       if(k==="Backspace"){nameBuffer=nameBuffer.slice(0,-1);return;}
