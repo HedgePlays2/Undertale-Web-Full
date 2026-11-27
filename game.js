@@ -1,3 +1,26 @@
+window.addEventListener("error", function (event) {
+  let panel = document.getElementById("fatal-game-error");
+  if (!panel) {
+    panel = document.createElement("pre");
+    panel.id = "fatal-game-error";
+    panel.style.cssText = "position:fixed;z-index:99999;left:8px;right:8px;top:8px;max-height:45vh;overflow:auto;margin:0;padding:12px;background:#260b0b;color:#fff;border:2px solid #ff5555;font:13px/1.4 monospace;white-space:pre-wrap";
+    document.body.appendChild(panel);
+  }
+  panel.textContent = "UNDERTALE WEB RUNTIME ERROR\n" +
+    (event.message || "Unknown error") + "\n" +
+    (event.filename || "") + ":" + (event.lineno || 0) + ":" + (event.colno || 0);
+});
+window.addEventListener("unhandledrejection", function (event) {
+  let panel = document.getElementById("fatal-game-error");
+  if (!panel) {
+    panel = document.createElement("pre");
+    panel.id = "fatal-game-error";
+    panel.style.cssText = "position:fixed;z-index:99999;left:8px;right:8px;top:8px;max-height:45vh;overflow:auto;margin:0;padding:12px;background:#260b0b;color:#fff;border:2px solid #ff5555;font:13px/1.4 monospace;white-space:pre-wrap";
+    document.body.appendChild(panel);
+  }
+  panel.textContent = "UNDERTALE WEB PROMISE ERROR\n" + String(event.reason);
+});
+
 (() => {
   "use strict";
   const canvas = document.querySelector("#game");
