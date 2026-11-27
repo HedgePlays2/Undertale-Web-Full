@@ -21,6 +21,12 @@
     </div>
     <div id="help">MOVE: ARROW KEYS / WASD &nbsp; • &nbsp; CONFIRM: Z / ENTER &nbsp; • &nbsp; CANCEL: X / ESC</div>
   </main>
+  <script>
+    window.addEventListener("error", function(e) {
+      var box = document.getElementById("boot-status");
+      if (box) box.textContent = "JAVASCRIPT ERROR: " + (e.message || "Script failed") + " | " + (e.filename || "") + ":" + (e.lineno || 0);
+    });
+  </script>
   <script src="game.js" defer onerror="document.getElementById('boot-status').textContent='ERROR: game.js did not load. Check the GitHub Pages deployment.'"></script>
 </body>
 </html>
