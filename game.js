@@ -383,12 +383,12 @@
       rect(0,178,320,62,"#382d47");
       for(let i=0;i<30;i++)rect((i*47)%320,180+(i*13)%55,2,2,"#796b84");
       drawHuman(160,164,1.3);drawFlowey(160,111);
-      openingText(["* A flower approaches you.","* "Howdy! I'm FLOWEY.""]);
+      openingText(["* A flower approaches you.", '* "Howdy! I\'m FLOWEY."']);
     }else if(openingStage===5){
       rect(0,0,W,H,"#171323");rect(0,178,320,62,"#382d47");
       drawHuman(160,164,1.3);drawFlowey(160,111);
       text("FLOWEY",160,30,10,"#fff","center");
-      openingText(["* "Your SOUL is the very source","* of your being!""]);
+      openingText(['* "Your SOUL is the very source', '* of your being!"']);
     }else if(openingStage===6){
       rect(0,0,W,H,"#171323");rect(0,178,320,62,"#382d47");
       drawHuman(160,164,1.3);drawFlowey(160,111);
@@ -398,7 +398,7 @@
       rect(0,0,W,H,"#171323");rect(0,178,320,62,"#382d47");
       drawHuman(160,164,1.3);drawFlowey(160,111);drawToriel(92,150);
       rect(110,70,100,3,"#fff");rect(110,73,100,2,"#bdb5d1");
-      openingText(["* A stranger drives the flower away.","* "Come along, my child.""]);
+      openingText(["* A stranger drives the flower away.", '* "Come along, my child."']);
     }else{
       rect(0,0,W,H,"#20182b");
       rect(24,25,272,190,"#4b3b51");
