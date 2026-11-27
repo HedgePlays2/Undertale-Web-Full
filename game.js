@@ -261,7 +261,7 @@
     const npc=r.npc;
     if(npc&&dist(player,npc)<25){
       if(npc.name==="TORIEL"){
-        say(["* Toriel watches over you with a gentle smile.","* "There are many puzzles in the Ruins."","* "If you need help, do not hesitate to ask.""]);
+        say(["* Toriel watches over you with a gentle smile.", '* "There are many puzzles in the Ruins."', '* "If you need help, do not hesitate to ask."']);
       }else if(npc.name==="MOSS"){
         if(!mossEncounterDone){
           say(["* The little moss creature tilts its head.","* A faint glow gathers around it.","* It seems to want to test your courage."],startBattle);
