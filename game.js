@@ -463,7 +463,9 @@ window.addEventListener("unhandledrejection", function (event) {
   }
   function frame(t){
     const dt=Math.min(.05,(t-lastTime)/1000||0);lastTime=t;
-    update(dt);draw();requestAnimationFrame(frame);
+    update(dt);draw();
+    const boot=document.getElementById("boot-status");if(boot)boot.remove();
+    requestAnimationFrame(frame);
   }
   window.addEventListener("keydown",e=>{
     const k=e.key.length===1?e.key.toLowerCase():e.key;
