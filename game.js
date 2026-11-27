@@ -13,7 +13,7 @@
   let mode = "title", roomId = "entrance", dialog = null, toast = "", toastUntil = 0;
   let lastTime = 0, battle = null, menuIndex = 0, menuPage = "root";
   let encounterCooldown = 0, stepCount = 0, mossEncounterDone = false;
-  let playerName = "FRISK", titleIndex = 0, hasSave = false;
+  let playerName = "CHARA", titleIndex = 0, hasSave = false, nameBuffer = "", nameCursor = 0;
 
   const player = { x: 160, y: 174, hp: 20, maxHp: 20, lv: 1, gold: 0, items: ["Familiar Candy"], facing: "up" };
   const world = {
@@ -297,6 +297,16 @@
       if(dx||dy){const len=Math.hypot(dx,dy);move(dx/len*75*dt,dy/len*75*dt);}
     }
   }
+  function drawNameEntry(){
+    rect(0,0,W,H,"#000");
+    text("Name the fallen human.",160,54,13,"#fff","center");
+    // The original game's simple, stark name-entry presentation.
+    rect(40,91,240,52,"#fff");rect(44,95,232,44,"#000");
+    text(nameBuffer.toUpperCase()+"_",56,123,14,"#fff");
+    text("ENTER: CONFIRM",160,184,9,"#aaa","center");
+    text("BACKSPACE: DELETE",160,201,8,"#777","center");
+    text("Z / X: CANCEL",160,232,7,"#555","center");
+  }
   function drawTitle(){
     rect(0,0,W,H,"#000");
     text("A HUMAN FALLS",160,36,8,"#999","center");
@@ -307,14 +317,21 @@
     opts.forEach((v,i)=>text((i===titleIndex?"> ":"  ")+v,160,150+i*22,11,i===titleIndex?"#ffcf54":"#fff","center"));
     text("Z / ENTER: SELECT",160,233,7,"#777","center");
   }
+  function beginNewGame(){
+    roomId="entrance";player.x=160;player.y=178;player.hp=20;player.gold=0;player.lv=1;
+    player.items=["Familiar Candy"];mossEncounterDone=false;
+    mode="dialog";
+    say(["Long ago, two races ruled over Earth: HUMANS and MONSTERS.","One day, war broke out between the two races.","After the humans won, they sealed the monsters underground.","Many years later...","A child climbs Mount Ebott."],()=>{mode="world";hud();});
+  }
   function startFromTitle(){
     const opts=hasSave?["START","CONTINUE","OPTIONS"]:["START","OPTIONS"];
     if(opts[titleIndex]==="CONTINUE"){loadGame();mode="world";dialog=null;hud();}
     else if(opts[titleIndex]==="OPTIONS"){notice("OPTIONS COMING SOON.");}
-    else {playerName="FRISK";roomId="entrance";player.x=160;player.y=178;player.hp=20;player.gold=0;player.lv=1;player.items=["Familiar Candy"];mossEncounterDone=false;mode="dialog";say(["A long time ago, two peoples shared this world.","A war changed everything.","The monsters were sealed beneath the mountain.","Many years passed.","A child climbed the mountain and found a quiet path."],()=>{mode="world";hud();});}
+    else {nameBuffer="";mode="name";}
   }
   function draw(){
     if(mode==="title"){drawTitle();return;}
+    if(mode==="name"){drawNameEntry();return;}
     if(mode==="battle"){drawBattle(Math.min(.05,(performance.now()-lastTime)/1000||0));return;}
     drawWorld();
     if(dialog){
@@ -336,6 +353,16 @@
     keys.add(k);
     if(e.repeat)return;
     if(mode==="title"){const n=hasSave?3:2;if(k==="ArrowDown"||k==="s")titleIndex=(titleIndex+1)%n;if(k==="ArrowUp"||k==="w")titleIndex=(titleIndex+n-1)%n;if(k==="z"||k==="Enter")startFromTitle();return;}
+    if(mode==="name"){
+      if(k==="Escape"||k==="x"){mode="title";return;}
+      if(k==="Backspace"){nameBuffer=nameBuffer.slice(0,-1);return;}
+      if(k==="Enter"||k==="z"){
+        if(nameBuffer.trim().length){playerName=nameBuffer.trim().slice(0,6).toUpperCase();beginNewGame();}
+        return;
+      }
+      if(/^[a-z]$/i.test(k)&&nameBuffer.length<6)nameBuffer+=k.toUpperCase();
+      return;
+    }
     if(mode==="dialog"&&(k==="z"||k==="Enter")){nextDialog();return;}
     if(mode==="battle"){battleInput(k);return;}
     if(mode==="world"&&(k==="z"||k==="Enter"))interact();
