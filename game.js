@@ -296,7 +296,24 @@
       if(dx||dy){const len=Math.hypot(dx,dy);move(dx/len*75*dt,dy/len*75*dt);}
     }
   }
+  function drawTitle(){
+    rect(0,0,W,H,"#000");
+    text("A HUMAN FALLS",160,36,8,"#999","center");
+    text("UNDERTALE",160,86,27,"#fff","center");
+    text("WEB EDITION",160,103,8,"#bbb","center");
+    rect(74,118,172,1,"#555");
+    const opts=hasSave?["START","CONTINUE","OPTIONS"]:["START","OPTIONS"];
+    opts.forEach((v,i)=>text((i===titleIndex?"> ":"  ")+v,160,150+i*22,11,i===titleIndex?"#ffcf54":"#fff","center"));
+    text("Z / ENTER: SELECT",160,233,7,"#777","center");
+  }
+  function startFromTitle(){
+    const opts=hasSave?["START","CONTINUE","OPTIONS"]:["START","OPTIONS"];
+    if(opts[titleIndex]==="CONTINUE"){loadGame();mode="world";dialog=null;hud();}
+    else if(opts[titleIndex]==="OPTIONS"){notice("OPTIONS COMING SOON.");}
+    else {playerName="FRISK";roomId="entrance";player.x=160;player.y=178;player.hp=20;player.gold=0;player.lv=1;player.items=["Familiar Candy"];mossEncounterDone=false;mode="dialog";say(["A long time ago, two peoples shared this world.","A war changed everything.","The monsters were sealed beneath the mountain.","Many years passed.","A child climbed the mountain and found a quiet path."],()=>{mode="world";hud();});}
+  }
   function draw(){
+    if(mode==="title"){drawTitle();return;}
     if(mode==="battle"){drawBattle(Math.min(.05,(performance.now()-lastTime)/1000||0));return;}
     drawWorld();
     if(dialog){
