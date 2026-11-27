@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div id="boot-status" style="position:fixed;inset:0;z-index:99998;display:grid;place-items:center;background:#000;color:#fff;font:16px monospace;text-align:center;padding:24px">UNDERTALE WEB — CHECKING GAME FILES…</div>
   <main id="game-wrap">
     <div id="frame">
       <canvas id="game" width="320" height="240" aria-label="Undertale Web game screen"></canvas>
@@ -20,6 +21,6 @@
     </div>
     <div id="help">MOVE: ARROW KEYS / WASD &nbsp; • &nbsp; CONFIRM: Z / ENTER &nbsp; • &nbsp; CANCEL: X / ESC</div>
   </main>
-  <script src="game.js" defer></script>
+  <script src="game.js" defer onerror="document.getElementById('boot-status').textContent='ERROR: game.js did not load. Check the GitHub Pages deployment.'"></script>
 </body>
 </html>
