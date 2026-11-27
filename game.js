@@ -248,7 +248,7 @@
         });
       }
     }
-    text("HEDGE",49,232,8);text("LV "+player.lv,112,232,8);text("HP",170,232,8);
+    text((playerName||"FRISK").toUpperCase(),49,232,8);text("LV "+player.lv,112,232,8);text("HP",170,232,8);
     rect(193,224,70,8,"#522c38");rect(193,224,70*player.hp/player.maxHp,8,"#e7c34e");text(player.hp+"/"+player.maxHp,270,232,8);
     if(battle.turn==="dodge"){
       const d=Math.hypot(player.x-battle.heart.x,player.y-battle.heart.y);
@@ -266,7 +266,7 @@
           say(["* The little moss creature gives a friendly wiggle.","* It seems happy to see you again."]);
         }
       }else{
-        say(["* Dusty points toward the passage ahead.","* "Take your time. There's no rush.""]);
+        say(["* Dusty points toward the passage ahead.","* Take your time. There is no rush."]);
       }
       return;
     }
