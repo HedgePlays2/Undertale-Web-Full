@@ -362,11 +362,34 @@ window.addEventListener("unhandledrejection", function (event) {
     rect(-2,12,4,13,"#39833d");rect(-12,23,24,3,"#39833d");ctx.restore();
   }
   function drawToriel(x,y){
-    ctx.save();ctx.translate(x,y);
-    rect(-10,-20,20,23,"#eee5d5");rect(-8,-29,16,12,"#eee5d5");
-    rect(-8,-31,4,7,"#eee5d5");rect(4,-31,4,7,"#eee5d5");
-    rect(-5,-25,3,3,"#4a3029");rect(3,-25,3,3,"#4a3029");
-    rect(-7,-14,14,2,"#8c2635");rect(-5,3,4,8,"#eee5d5");rect(1,3,4,8,"#eee5d5");
+    // Original, crisp pixel-art interpretation of Toriel: soft goat features
+    // and her familiar purple robe. Drawn from simple pixel clusters, not a
+    // stretched geometric placeholder.
+    ctx.save();ctx.translate(Math.round(x),Math.round(y));
+    // Robe silhouette and sleeves
+    rect(-13,-7,26,18,"#6b3b83");
+    rect(-17,-5,6,13,"#6b3b83");rect(11,-5,6,13,"#6b3b83");
+    rect(-12,8,24,5,"#56306e");
+    rect(-9,11,6,3,"#eee8dc");rect(3,11,6,3,"#eee8dc");
+    // Robe collar
+    rect(-8,-9,16,5,"#f2eee4");
+    rect(-5,-7,10,3,"#d7cbbd");
+    // Hood / head
+    rect(-10,-25,20,17,"#eee8dc");
+    rect(-8,-28,16,5,"#eee8dc");
+    rect(-7,-31,5,4,"#eee8dc");rect(2,-31,5,4,"#eee8dc");
+    // Long floppy ears, extending out and down
+    rect(-15,-25,6,5,"#eee8dc");rect(-18,-22,5,11,"#eee8dc");
+    rect(-16,-12,5,4,"#eee8dc");rect(9,-25,6,5,"#eee8dc");
+    rect(13,-22,5,11,"#eee8dc");rect(11,-12,5,4,"#eee8dc");
+    rect(-16,-20,2,8,"#c9b9b2");rect(14,-20,2,8,"#c9b9b2");
+    // Gentle face: eyes, muzzle and small smile
+    rect(-6,-21,3,4,"#493b42");rect(3,-21,3,4,"#493b42");
+    rect(-2,-17,4,3,"#d99b9c");rect(-1,-14,2,1,"#7a5556");
+    rect(-4,-12,8,1,"#b98f8e");
+    // Delta Rune-like golden emblem on the chest
+    rect(-1,-5,2,2,"#f0d27b");rect(-5,-2,2,2,"#f0d27b");
+    rect(3,-2,2,2,"#f0d27b");rect(-2,1,4,1,"#f0d27b");
     ctx.restore();
   }
   function openingText(lines){
