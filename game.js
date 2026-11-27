@@ -355,11 +355,34 @@ window.addEventListener("unhandledrejection", function (event) {
     rect(-4,-14,8,3,"#59402e");ctx.restore();
   }
   function drawFlowey(x,y){
-    ctx.save();ctx.translate(x,y);
-    for(let i=0;i<6;i++){ctx.save();ctx.rotate(i*Math.PI/3);rect(-3,-21,6,12,"#f4df4d");ctx.restore();}
-    ctx.fillStyle="#f5e85a";ctx.beginPath();ctx.arc(0,0,12,0,Math.PI*2);ctx.fill();
-    rect(-7,-3,4,3,"#171717");rect(4,-3,4,3,"#171717");rect(-5,5,10,2,"#171717");
-    rect(-2,12,4,13,"#39833d");rect(-12,23,24,3,"#39833d");ctx.restore();
+    // Flowey: a bright, friendly-looking flower with the familiar yellow
+    // face, pale petals, green stem and two leaves. Built from crisp pixel
+    // clusters so the silhouette reads clearly at the game's native scale.
+    ctx.save();ctx.translate(Math.round(x),Math.round(y));
+    // Green stem and leaves sit behind the flower head.
+    rect(-2,10,4,23,"#39833d");
+    rect(-3,18,3,5,"#39833d");rect(-9,14,8,4,"#39833d");
+    rect(2,22,3,5,"#39833d");rect(4,18,8,4,"#39833d");
+    rect(-2,30,4,3,"#286b36");
+    // Eight soft, pale-yellow petals with warm inner shading.
+    const petals=[
+      [-4,-27,8,10],[-15,-24,9,8],[-22,-12,10,8],[-17,2,9,8],
+      [-4,9,8,10],[7,2,9,8],[12,-12,10,8],[6,-24,9,8]
+    ];
+    petals.forEach(([px,py,pw,ph])=>{
+      rect(px,py,pw,ph,"#fff4b5");
+      rect(px+2,py+2,Math.max(2,pw-4),Math.max(2,ph-4),"#f8e99a");
+    });
+    // Stepped round face, avoiding a blurry anti-aliased circle.
+    rect(-7,-13,14,26,"#f5df45");
+    rect(-11,-9,22,18,"#f5df45");
+    rect(-9,-12,18,24,"#f5df45");
+    rect(-7,-10,14,20,"#ffed59");
+    // Large, dark eyes and a cheerful curved pixel smile.
+    rect(-7,-4,4,5,"#241d18");rect(4,-4,4,5,"#241d18");
+    rect(-5,5,3,2,"#35251c");rect(-2,7,4,2,"#35251c");rect(2,5,3,2,"#35251c");
+    rect(-9,-7,2,2,"#fff6bd");rect(2,-7,2,2,"#fff6bd");
+    ctx.restore();
   }
   function drawToriel(x,y){
     // Original, crisp pixel-art interpretation of Toriel: soft goat features
