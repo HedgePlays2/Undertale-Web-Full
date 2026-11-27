@@ -12,7 +12,7 @@
   const keys = new Set();
   let mode = "world", roomId = "entrance", dialog = null, toast = "", toastUntil = 0;
   let lastTime = 0, battle = null, menuIndex = 0, menuPage = "root";
-  let encounterCooldown = 0, stepCount = 0;
+  let encounterCooldown = 0, stepCount = 0, mossEncounterDone = false;
 
   const player = { x: 160, y: 174, hp: 20, maxHp: 20, lv: 1, gold: 0, items: ["Familiar Candy"], facing: "up" };
   const world = {
@@ -83,7 +83,9 @@
   }
   function collides(x,y){
     const r=world[roomId];
+    const inDoorway = r.exits.some(e => x >= e.x-2 && x <= e.x+e.w+2 && y >= e.y-3 && y <= e.y+e.h+3);
     for(const s of r.solids){
+      if(inDoorway && (s[2] <= 14 || s[3] <= 14)) continue;
       if(x+5>s[0] && x-5<s[0]+s[2] && y+5>s[1] && y-5<s[1]+s[3]) return true;
     }
     return false;
@@ -138,12 +140,12 @@
     text(r.label,25,34,8,"#eee4ce");
   }
   function startBattle(){
-    battle={enemy:"Cave Wisp",enemyHp:12,maxEnemyHp:12,turn:"menu",heart:{x:160,y:160,vx:1.1,vy:.8},timer:0,damage:0,enemyText:"A shy wisp drifts into view.",spare:false};
+    battle={enemy:"Cave Wisp",enemyHp:12,maxEnemyHp:12,turn:"menu",heart:{x:160,y:175},timer:0,spawnTimer:0,bullets:[],enemyText:"A shy wisp drifts into view.",spare:false};
     mode="battle";menuPage="root";menuIndex=0;
   }
   function finishBattle(victory){
     mode="world";battle=null;encounterCooldown=2;
-    if(victory){player.gold+=4;hud();say(["* You earned 4 G.","* The path ahead feels a little less lonely."]);}
+    if(victory){mossEncounterDone=true;player.gold+=4;hud();say(["* You earned 4 G.","* The path ahead feels a little less lonely."]);}
   }
   function chooseMenu(){
     if(!battle)return;
@@ -208,9 +210,23 @@
       battle.aim=(battle.aim+dt*48)%100;
     }else if(battle.turn==="dodge"){
       rect(72,132,176,88,"#fff");rect(76,136,168,80,"#000");
-      battle.heart.x+=battle.heart.vx*dt*45;battle.heart.y+=battle.heart.vy*dt*45;
-      if(battle.heart.x<84||battle.heart.x>236)battle.heart.vx*=-1;
-      if(battle.heart.y<144||battle.heart.y>208)battle.heart.vy*=-1;
+      battle.spawnTimer-=dt;
+      if(battle.spawnTimer<=0){
+        battle.spawnTimer=.62;
+        const side=(Math.floor(battle.timer*4)%2===0)?0:1;
+        battle.bullets.push({x:side?238:82,y:150+((Math.floor(battle.timer*19)%5)*11),vx:side?-75:75});
+      }
+      battle.bullets.forEach(b=>{b.x+=b.vx*dt;rect(b.x-2,b.y-2,5,5,"#fff");});
+      battle.bullets=battle.bullets.filter(b=>{
+        if(Math.abs(b.x-battle.heart.x)<7&&Math.abs(b.y-battle.heart.y)<7){
+          player.hp=Math.max(0,player.hp-2);hud();return false;
+        }
+        return b.x>78&&b.x<242;
+      });
+      if(player.hp<=0){
+        player.hp=player.maxHp;hud();battle=null;mode="world";roomId="entrance";player.x=160;player.y=178;
+        say(["* You wake up beside the save point."]);return;
+      }
       pixelHeart(Math.round(battle.heart.x)-3,Math.round(battle.heart.y)-3,1);
       battle.timer-=dt;
       if(battle.timer<=0){battle.turn="menu";battle.enemyText="The wisp drifts back, waiting.";menuPage="root";menuIndex=0;}
@@ -219,7 +235,8 @@
       if(battle.turn==="enemy"){
         battle.timer+=dt;
         if(battle.timer>1.5){
-          battle.turn="dodge";battle.timer=3.2;battle.heart={x:160,y:175,vx:1.3,vy:1.05};
+          if(battle.spare){finishBattle(true);return;}
+          battle.turn="dodge";battle.timer=3.2;battle.spawnTimer=0;battle.bullets=[];battle.heart={x:160,y:175};
         }
       }else{
         const opts=menuPage==="root"?["FIGHT","ACT","ITEM","MERCY"]:menuPage==="act"?["WAVE","COMPLIMENT"]:player.items;
@@ -242,7 +259,11 @@
     const npc=r.npc;
     if(npc&&dist(player,npc)<25){
       if(npc.name==="MOSS"){
-        say(["* The little moss creature tilts its head.","* It makes a soft, friendly sound.","* Somehow, you feel a little braver."],()=>{if(!player.items.includes("Familiar Candy"))player.items.push("Familiar Candy");});
+        if(!mossEncounterDone){
+          say(["* The little moss creature tilts its head.","* A faint glow gathers around it.","* It seems to want to test your courage."],startBattle);
+        }else{
+          say(["* The little moss creature gives a friendly wiggle.","* It seems happy to see you again."]);
+        }
       }else{
         say(["* Dusty points toward the passage ahead.","* "Take your time. There's no rush.""]);
       }
