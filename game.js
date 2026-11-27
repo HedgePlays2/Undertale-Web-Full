@@ -10,9 +10,10 @@
 
   const W = 320, H = 240, SAVE_KEY = "undertale-web-save";
   const keys = new Set();
-  let mode = "world", roomId = "entrance", dialog = null, toast = "", toastUntil = 0;
+  let mode = "title", roomId = "entrance", dialog = null, toast = "", toastUntil = 0;
   let lastTime = 0, battle = null, menuIndex = 0, menuPage = "root";
   let encounterCooldown = 0, stepCount = 0, mossEncounterDone = false;
+  let playerName = "FRISK", titleIndex = 0, hasSave = false;
 
   const player = { x: 160, y: 174, hp: 20, maxHp: 20, lv: 1, gold: 0, items: ["Familiar Candy"], facing: "up" };
   const world = {
@@ -47,7 +48,7 @@
   function rect(x,y,w,h,color){ctx.fillStyle=color;ctx.fillRect(Math.round(x),Math.round(y),w,h);}
   function text(s,x,y,size=8,color="#fff",align="left"){ctx.fillStyle=color;ctx.font=size+"px monospace";ctx.textAlign=align;ctx.fillText(s,x,y);ctx.textAlign="left";}
   function hud(){
-    statsEl.textContent = "HEDGE   LV "+player.lv+"   HP "+player.hp+"/"+player.maxHp;
+    statsEl.textContent = playerName.toUpperCase()+"   LV "+player.lv+"   HP "+player.hp+"/"+player.maxHp;
     goldEl.textContent = player.gold+" G";
     roomEl.textContent = world[roomId].label;
   }
@@ -341,5 +342,5 @@
   });
   window.addEventListener("keyup",e=>keys.delete(e.key.length===1?e.key.toLowerCase():e.key));
   window.addEventListener("blur",()=>keys.clear());
-  loadGame();hud();requestAnimationFrame(frame);
+  loadGame();mode="title";hud();requestAnimationFrame(frame);
 })();
