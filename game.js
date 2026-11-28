@@ -229,8 +229,12 @@ window.addEventListener("unhandledrejection", function (event) {
     mode="battle";menuPage="root";menuIndex=0;
   }
   function finishBattle(victory){
+    const enemyName=battle?battle.enemy:"";
     mode="world";battle=null;encounterCooldown=2;
-    if(victory){mossEncounterDone=true;player.gold+=4;hud();say(["* You earned 4 G.","* The path ahead feels a little less lonely."]);}
+    if(victory){
+      if(enemyName==="Training Dummy"){say(["* The training dummy lesson is complete.","* Try ACT or MERCY to end a real encounter peacefully."]);}
+      else {mossEncounterDone=true;player.gold+=4;hud();say(["* You earned 4 G.","* The path ahead feels a little less lonely."]);}
+    }
   }
   function chooseMenu(){
     if(!battle)return;
@@ -286,7 +290,7 @@ window.addEventListener("unhandledrejection", function (event) {
     rect(130,38,60,48,"#101018");
     ctx.fillStyle="#b7d5c4";ctx.beginPath();ctx.arc(160,63,19,0,Math.PI*2);ctx.fill();
     rect(146,55,5,4,"#283a3b");rect(169,55,5,4,"#283a3b");rect(151,70,18,2,"#647b76");
-    text("CAVE WISP",160,24,10,"#fff","center");
+    text(battle.enemy.toUpperCase(),160,24,10,"#fff","center");
     rect(110,91,100,5,"#502b35");rect(110,91,100*battle.enemyHp/battle.maxEnemyHp,5,"#d54b58");
     text(battle.enemyText,160,111,8,"#ddd","center");
     if(battle.turn==="aim"){
