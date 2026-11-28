@@ -6,8 +6,10 @@ window.addEventListener("error", function (event) {
     panel.style.cssText = "position:fixed;z-index:99999;left:8px;right:8px;top:8px;max-height:45vh;overflow:auto;margin:0;padding:12px;background:#260b0b;color:#fff;border:2px solid #ff5555;font:13px/1.4 monospace;white-space:pre-wrap";
     document.body.appendChild(panel);
   }
-  panel.textContent = "UNDERTALE WEB RUNTIME ERROR\n" +
-    (event.message || "Unknown error") + "\n" +
+  panel.textContent = "UNDERTALE WEB RUNTIME ERROR
+" +
+    (event.message || "Unknown error") + "
+" +
     (event.filename || "") + ":" + (event.lineno || 0) + ":" + (event.colno || 0);
 });
 window.addEventListener("unhandledrejection", function (event) {
@@ -18,7 +20,8 @@ window.addEventListener("unhandledrejection", function (event) {
     panel.style.cssText = "position:fixed;z-index:99999;left:8px;right:8px;top:8px;max-height:45vh;overflow:auto;margin:0;padding:12px;background:#260b0b;color:#fff;border:2px solid #ff5555;font:13px/1.4 monospace;white-space:pre-wrap";
     document.body.appendChild(panel);
   }
-  panel.textContent = "UNDERTALE WEB PROMISE ERROR\n" + String(event.reason);
+  panel.textContent = "UNDERTALE WEB PROMISE ERROR
+" + String(event.reason);
 });
 
 (() => {
@@ -197,7 +200,15 @@ window.addEventListener("unhandledrejection", function (event) {
     r.solids.forEach(s=>{rect(...s,r.wall);rect(s[0]+2,s[1]+2,Math.max(1,s[2]-4),2,"#ffffff18");});
     r.exits.forEach(e=>{rect(e.x,e.y,e.w,e.h,"#d8c6a5");rect(e.x+4,e.y+4,e.w-8,e.h-4,"#493a4e");});
     r.props.forEach(p=>{
-      if(p.type==="flowers"){\n        for(let i=0;i<12;i++){const fx=p.x-30+(i*13)%60,fy=p.y-12+(i*17)%24;rect(fx,fy,2,5,"#e6d77b");rect(fx,fy-2,2,2,"#fff2b2");}\n      }else if(p.type==="switch"){\n        rect(p.x-9,p.y-6,18,12,p.activated?"#b64a56":"#6b566e");rect(p.x-4,p.y-3,8,6,p.activated?"#f5cf68":"#b5a5bd");if(dist(player,p)<24)text("Z  FLIP",p.x-15,p.y-13,7);\n      }else if(p.type==="plate"){\n        rect(p.x-13,p.y-5,26,10,p.activated?"#d8c6a5":"#8c7c91");rect(p.x-9,p.y-2,18,4,p.activated?"#f4d77a":"#594a60");if(dist(player,p)<24)text("Z  PRESS",p.x-18,p.y-13,7);\n      }else if(p.type==="dummy"){\n        rect(p.x-10,p.y-9,20,18,"#a87543");rect(p.x-7,p.y-6,14,12,"#c9945a");rect(p.x-2,p.y-6,4,12,"#80532e");rect(p.x-14,p.y-3,4,8,"#80532e");rect(p.x+10,p.y-3,4,8,"#80532e");if(dist(player,p)<25)text("Z  TRAIN",p.x-19,p.y-16,7);\n      }else if(p.type==="save"){
+      if(p.type==="flowers"){
+        for(let i=0;i<12;i++){const fx=p.x-30+(i*13)%60,fy=p.y-12+(i*17)%24;rect(fx,fy,2,5,"#e6d77b");rect(fx,fy-2,2,2,"#fff2b2");}
+      }else if(p.type==="switch"){
+        rect(p.x-9,p.y-6,18,12,p.activated?"#b64a56":"#6b566e");rect(p.x-4,p.y-3,8,6,p.activated?"#f5cf68":"#b5a5bd");if(dist(player,p)<24)text("Z  FLIP",p.x-15,p.y-13,7);
+      }else if(p.type==="plate"){
+        rect(p.x-13,p.y-5,26,10,p.activated?"#d8c6a5":"#8c7c91");rect(p.x-9,p.y-2,18,4,p.activated?"#f4d77a":"#594a60");if(dist(player,p)<24)text("Z  PRESS",p.x-18,p.y-13,7);
+      }else if(p.type==="dummy"){
+        rect(p.x-10,p.y-9,20,18,"#a87543");rect(p.x-7,p.y-6,14,12,"#c9945a");rect(p.x-2,p.y-6,4,12,"#80532e");rect(p.x-14,p.y-3,4,8,"#80532e");rect(p.x+10,p.y-3,4,8,"#80532e");if(dist(player,p)<25)text("Z  TRAIN",p.x-19,p.y-16,7);
+      }else if(p.type==="save"){
         text("✦",p.x-5,p.y+5,15,"#fff0a0");
         if(dist(player,p)<22) text("Z  SAVE",p.x-15,p.y-12,7,"#fff4c2");
       }else if(p.type==="chest"){
@@ -347,7 +358,10 @@ window.addEventListener("unhandledrejection", function (event) {
     }
     for(const p of r.props){
       if(dist(player,p)<24){
-        if(p.type==="save"){saveGame();return;}\n        if(p.type==="switch"||p.type==="plate"){p.activated=!p.activated;say([p.type==="switch"?"* You flip the switch.":"* You step onto the pressure plate.",p.activated?"* A mechanism clicks somewhere nearby.":"* The mechanism resets."]);return;}\n        if(p.type==="dummy"){say(["* The training dummy looks at you.", "* It is here to teach you how to handle encounters."],()=>startBattle("Training Dummy"));return;}\n        if(p.type==="sign"){say(["* "+p.text,"* The letters are too worn to read the rest."]);return;}
+        if(p.type==="save"){saveGame();return;}
+        if(p.type==="switch"||p.type==="plate"){p.activated=!p.activated;say([p.type==="switch"?"* You flip the switch.":"* You step onto the pressure plate.",p.activated?"* A mechanism clicks somewhere nearby.":"* The mechanism resets."]);return;}
+        if(p.type==="dummy"){say(["* The training dummy looks at you.", "* It is here to teach you how to handle encounters."],()=>startBattle("Training Dummy"));return;}
+        if(p.type==="sign"){say(["* "+p.text,"* The letters are too worn to read the rest."]);return;}
         if(p.type==="chest"){
           if(!p.open){p.open=true;player.items.push("Familiar Candy");say(["* You found a Familiar Candy!","* It was added to your ITEM menu."]);}else say(["* The chest is empty."]);
           return;
@@ -585,7 +599,16 @@ window.addEventListener("unhandledrejection", function (event) {
     else if(opts[titleIndex]==="OPTIONS"){notice("OPTIONS COMING SOON.");}
     else {nameBuffer="";mode="name";}
   }
-  function drawFullMap(){\n    rect(0,0,W,H,"#08070b");text("THE RUINS — MAP",160,18,11,"#fff","center");\n    const sx=18,sy=42,stepX=18,stepY=31;\n    ruinsLinks.forEach(([a,b])=>{const na=ruinsById[a],nb=ruinsById[b];ctx.strokeStyle="#765b83";ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(sx+na[2]*stepX,sy+na[3]*stepY);ctx.lineTo(sx+nb[2]*stepX,sy+nb[3]*stepY);ctx.stroke();});\n    ruinsNodes.forEach(n=>{const x=sx+n[2]*stepX,y=sy+n[3]*stepY;rect(x-5,y-4,10,8,n[0]===roomId?"#ffdf5c":"#b57ac2");rect(x-3,y-2,6,4,"#35243e");});\n    text("YELLOW = YOU",160,218,8,"#ffdf5c","center");text("M / X: RETURN",160,232,7,"#aaa","center");\n  }\n  function draw(){\n    if(mode==="map"){drawFullMap();return;}\n    if(mode==="title"){drawTitle();return;}
+  function drawFullMap(){
+    rect(0,0,W,H,"#08070b");text("THE RUINS — MAP",160,18,11,"#fff","center");
+    const sx=18,sy=42,stepX=18,stepY=31;
+    ruinsLinks.forEach(([a,b])=>{const na=ruinsById[a],nb=ruinsById[b];ctx.strokeStyle="#765b83";ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(sx+na[2]*stepX,sy+na[3]*stepY);ctx.lineTo(sx+nb[2]*stepX,sy+nb[3]*stepY);ctx.stroke();});
+    ruinsNodes.forEach(n=>{const x=sx+n[2]*stepX,y=sy+n[3]*stepY;rect(x-5,y-4,10,8,n[0]===roomId?"#ffdf5c":"#b57ac2");rect(x-3,y-2,6,4,"#35243e");});
+    text("YELLOW = YOU",160,218,8,"#ffdf5c","center");text("M / X: RETURN",160,232,7,"#aaa","center");
+  }
+  function draw(){
+    if(mode==="map"){drawFullMap();return;}
+    if(mode==="title"){drawTitle();return;}
     if(mode==="name"){drawNameEntry();return;}
     if(mode==="opening"){drawOpening();return;}
     if(mode==="flowey"){drawFloweyAttack();return;}
@@ -613,7 +636,9 @@ window.addEventListener("unhandledrejection", function (event) {
     if(e.repeat)return;
     if(mode==="title"){const n=hasSave?3:2;if(k==="ArrowDown"||k==="s")titleIndex=(titleIndex+1)%n;if(k==="ArrowUp"||k==="w")titleIndex=(titleIndex+n-1)%n;if(k==="z"||k==="Enter")startFromTitle();return;}
     if(mode==="opening"){if(k==="z"||k==="Enter")advanceOpening();return;}
-    if(mode==="flowey"){return;}\n    if(mode==="map"){if(k==="m"||k==="x"||k==="Escape")mode="world";return;}\n    if(mode==="name"){
+    if(mode==="flowey"){return;}
+    if(mode==="map"){if(k==="m"||k==="x"||k==="Escape")mode="world";return;}
+    if(mode==="name"){
       if(k==="Escape"||k==="x"){mode="title";return;}
       if(k==="Backspace"){nameBuffer=nameBuffer.slice(0,-1);return;}
       if(k==="Enter"||k==="z"){
@@ -625,7 +650,9 @@ window.addEventListener("unhandledrejection", function (event) {
     }
     if(mode==="dialog"&&(k==="z"||k==="Enter")){nextDialog();return;}
     if(mode==="battle"){battleInput(k);return;}
-    if(mode==="world"&&(k==="z"||k==="Enter"))interact();\n    if(mode==="world"&&k==="m")mode="map";\n    if(mode==="world"&&k==="Escape")notice("THE WORLD IS WAITING.");
+    if(mode==="world"&&(k==="z"||k==="Enter"))interact();
+    if(mode==="world"&&k==="m")mode="map";
+    if(mode==="world"&&k==="Escape")notice("THE WORLD IS WAITING.");
   });
   window.addEventListener("keyup",e=>keys.delete(e.key.length===1?e.key.toLowerCase():e.key));
   window.addEventListener("blur",()=>keys.clear());
