@@ -40,32 +40,81 @@ window.addEventListener("unhandledrejection", function (event) {
   let playerName = "CHARA", titleIndex = 0, hasSave = false, nameBuffer = "", nameCursor = 0;
 
   const player = { x: 160, y: 174, hp: 20, maxHp: 20, lv: 1, gold: 0, items: ["Familiar Candy"], facing: "up" };
-  const world = {
-    entrance: {
-      label: "THE RUINS — ENTRANCE", floor: "#30243c", wall: "#76627e", accent: "#b69a9e",
-      spawn: [160, 178], exits: [{ x: 282, y: 34, w: 20, h: 38, to: "hall", spawn: [42, 184] }],
-      solids: [[18,18,284,12],[18,210,284,12],[18,18,12,204],[290,18,12,204],[55,62,48,12],[217,62,48,12]],
-      props: [{type:"save",x:40,y:190},{type:"sign",x:160,y:54,text:"A faded inscription is carved into the stone."}],
-      npc: {x:160,y:110,name:"MOSS",color:"#91b77a"}
-    },
-    hall: {
-      label: "THE RUINS — HALL", floor: "#392b46", wall: "#826e8b", accent: "#c6a8a2",
-      spawn: [42,184], exits: [
-        {x:282,y:34,w:20,h:38,to:"leafroom",spawn:[42,184]},
-        {x:18,y:175,w:18,h:34,to:"entrance",spawn:[270,80]}
-      ],
-      solids: [[18,18,284,12],[18,210,284,12],[18,18,12,204],[290,18,12,204],[82,65,12,85],[226,65,12,85],[82,138,156,12]],
-      props: [{type:"save",x:42,y:190},{type:"sign",x:160,y:48,text:"Three paths meet in this quiet hall."}],
-      npc: {x:160,y:181,name:"DUSTY",color:"#b8a0c9"}
-    },
-    leafroom: {
-      label: "THE RUINS — LEAF ROOM", floor: "#293b32", wall: "#66816e", accent: "#b8c89a",
-      spawn: [42,184], exits: [{x:18,y:175,w:18,h:34,to:"hall",spawn:[270,80]}],
-      solids: [[18,18,284,12],[18,210,284,12],[18,18,12,204],[290,18,12,204],[75,55,12,92],[233,55,12,92],[75,135,170,12]],
-      props: [{type:"save",x:42,y:190},{type:"chest",x:160,y:85}],
-      npc: {x:160,y:178,name:"MOSS",color:"#91b77a"}
-    }
-  };
+  // Full Ruins route based on the supplied complete-map reference.
+  // Each node is a playable room; links create real door-to-door transitions.
+  const ruinsNodes = [
+    ["entrance","Ruins Entrance",0,3,"start"],
+    ["flowerbed","Golden Flower Bed",1,3,"flowers"],
+    ["switch-hall","Switch Hall",2,3,"switch"],
+    ["leaf-puzzle","Leaf Puzzle",3,3,"puzzle"],
+    ["side-chamber-a","Quiet Chamber",3,2,"side"],
+    ["long-corridor","Long Corridor",4,3,"corridor"],
+    ["pressure-room","Pressure Plate Room",5,3,"plate"],
+    ["side-chamber-b","Old Storage",5,4,"side"],
+    ["dummy-room","Training Room",6,3,"dummy"],
+    ["crossroads","Ruins Crossroads",7,3,"cross"],
+    ["spider-room","Spider Bake Sale",7,2,"spider"],
+    ["water-room","Waterfall Drip Room",8,3,"water"],
+    ["mural-hall","Ancient Mural Hall",9,3,"mural"],
+    ["switch-room","Hidden Switch Room",9,4,"switch"],
+    ["bridge-room","Broken Bridge",10,3,"bridge"],
+    ["pillar-room","Pillar Puzzle",11,3,"puzzle"],
+    ["side-chamber-c","Forgotten Nook",11,2,"side"],
+    ["toriel-approach","Toriel's Approach",12,3,"approach"],
+    ["home-entry","Home Entrance",12,2,"home"],
+    ["home-hall","Home Hall",13,2,"home"],
+    ["home-kitchen","Home Kitchen",13,1,"home"],
+    ["home-bedroom","Home Bedroom",14,1,"home"],
+    ["home-exit","Home Exit",14,2,"home"],
+    ["final-hall","Final Ruins Hall",15,2,"final"]
+  ];
+  const ruinsLinks = [
+    ["entrance","flowerbed"],["flowerbed","switch-hall"],["switch-hall","leaf-puzzle"],
+    ["leaf-puzzle","side-chamber-a"],["leaf-puzzle","long-corridor"],
+    ["long-corridor","pressure-room"],["pressure-room","side-chamber-b"],
+    ["pressure-room","dummy-room"],["dummy-room","crossroads"],
+    ["crossroads","spider-room"],["crossroads","water-room"],
+    ["water-room","mural-hall"],["mural-hall","switch-room"],
+    ["mural-hall","bridge-room"],["bridge-room","pillar-room"],
+    ["pillar-room","side-chamber-c"],["pillar-room","toriel-approach"],
+    ["toriel-approach","home-entry"],["home-entry","home-hall"],
+    ["home-hall","home-kitchen"],["home-hall","home-bedroom"],
+    ["home-hall","home-exit"],["home-exit","final-hall"]
+  ];
+  const ruinsById = Object.fromEntries(ruinsNodes.map(n=>[n[0],n]));
+  const ruinsAdj = Object.fromEntries(ruinsNodes.map(n=>[n[0],[]]));
+  ruinsLinks.forEach(([a,b])=>{ruinsAdj[a].push(b);ruinsAdj[b].push(a);});
+  const world = Object.fromEntries(ruinsNodes.map(([id,label,gx,gy,type])=>{
+    const exits=ruinsAdj[id].map(to=>{
+      const n=ruinsById[to], dx=n[2]-gx, dy=n[3]-gy;
+      if(dx>0)return {x:282,y:104,w:20,h:32,to,spawn:[42,120]};
+      if(dx<0)return {x:18,y:104,w:20,h:32,to,spawn:[278,120]};
+      if(dy<0)return {x:144,y:18,w:32,h:20,to,spawn:[160,198]};
+      return {x:144,y:202,w:32,h:20,to,spawn:[160,42]};
+    });
+    const props=[{type:"save",x:42,y:188}];
+    if(type==="start")props.push({type:"sign",x:160,y:56,text:"The Ruins are full of puzzles. Take your time."});
+    if(type==="flowers")props.push({type:"flowers",x:160,y:120});
+    if(type==="switch")props.push({type:"switch",x:160,y:104,activated:false});
+    if(type==="puzzle"||type==="plate")props.push({type:"plate",x:160,y:120,activated:false});
+    if(type==="side")props.push({type:"chest",x:160,y:120});
+    if(type==="dummy")props.push({type:"dummy",x:160,y:112});
+    if(type==="spider")props.push({type:"sign",x:160,y:72,text:"Spider bake sale. All proceeds go to her cause."});
+    if(type==="mural")props.push({type:"sign",x:160,y:70,text:"A mural of a strange, familiar symbol."});
+    if(type==="bridge")props.push({type:"plate",x:160,y:120,activated:false});
+    if(type==="approach")props.push({type:"sign",x:160,y:70,text:"A warm light shines from the home ahead."});
+    if(type==="home")props.push({type:"sign",x:160,y:70,text:"It is a comfortable home, filled with love."});
+    if(type==="final")props.push({type:"sign",x:160,y:70,text:"The path beyond the Ruins lies ahead."});
+    const floor=type==="flowers"?"#3b3447":type==="home"?"#4a3b4a":"#30243c";
+    const wall=type==="home"?"#9a7c8a":"#76627e";
+    return [id,{
+      label:"THE RUINS — "+label.toUpperCase(),floor,wall,accent:"#b69a9e",
+      spawn:[160,178],exits,
+      solids:[[18,18,284,12],[18,210,284,12],[18,18,12,204],[290,18,12,204]],
+      props,npc:id==="toriel-approach"||id==="home-entry"?{x:160,y:112,name:"TORIEL",color:"#eee5d5"}:null
+    }];
+  }));
+  
 
   const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
   const dist = (a,b) => Math.hypot(a.x-b.x,a.y-b.y);
